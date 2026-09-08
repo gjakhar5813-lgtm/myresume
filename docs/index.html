@@ -150,6 +150,44 @@
         </div>
       </div>
     </section>
+
+    <section id="calculator" class="section">
+      <div class="section-header">
+        <span class="tag">Calculator</span>
+      </div>
+
+      <div class="calculator-wrap">
+        <div class="calculator-box">
+          <div id="display" class="display">0</div>
+          <div class="calc-grid">
+            <button class="btn-clear" onclick="clearDisplay()">AC</button>
+            <button class="op" onclick="appendValue('/')">÷</button>
+            <button class="op" onclick="appendValue('*')">×</button>
+            <button class="op" onclick="appendValue('-')">−</button>
+
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button class="op" onclick="appendValue('+')">+</button>
+
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button class="op" onclick="appendValue('('">(</button>
+
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button class="op" onclick="appendValue(')')">)</button>
+
+            <button class="zero" onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button class="equals" onclick="calculateExpression()">=</button>
+          </div>
+          <div id="calc-error" class="calc-error"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
@@ -158,5 +196,52 @@
       <a href="mailto:shravanjakhar2004@gmail.com">shravanjakhar2004@gmail.com</a>
     </div>
   </footer>
+
+  <script>
+    const display = document.getElementById('display');
+    const calcError = document.getElementById('calc-error');
+    let expression = '';
+
+    function appendValue(value) {
+      expression += value;
+      display.textContent = expression || '0';
+      calcError.textContent = '';
+    }
+
+    function clearDisplay() {
+      expression = '';
+      display.textContent = '0';
+      calcError.textContent = '';
+    }
+
+    function calculateExpression() {
+      if (!expression) return;
+
+      try {
+        const result = Function(`"use strict"; return (${expression})`)();
+        if (!Number.isFinite(result)) {
+          throw new Error('Invalid calculation');
+        }
+        expression = String(result);
+        display.textContent = expression;
+        calcError.textContent = '';
+      } catch (error) {
+        calcError.textContent = 'Invalid expression';
+      }
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (/^[0-9+\-*/().]$/.test(event.key)) {
+        appendValue(event.key);
+      } else if (event.key === 'Enter') {
+        calculateExpression();
+      } else if (event.key === 'Backspace') {
+        expression = expression.slice(0, -1);
+        display.textContent = expression || '0';
+      } else if (event.key === 'Escape') {
+        clearDisplay();
+      }
+    });
+  </script>
 </body>
 </html>
